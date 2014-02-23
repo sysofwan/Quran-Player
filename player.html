@@ -1,0 +1,124 @@
+<!doctype html>
+<html data-ng-app="app">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Quran Player</title>
+    <link href="/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+      html {
+        width: 357px;
+        height: 500px;
+      }
+      body {
+        padding-top: 115px;
+      }
+      div.control {
+        height: 115px;
+        width: 100%;
+        position: fixed;
+        top: 0;
+        left: 0;
+        background: white;
+        box-shadow: 0 2px 3px #ccc;
+      }
+
+      div.player {
+        height: 80px;
+      }
+
+      .control div.nav {
+        height: 35px;
+        padding: 3px;
+      }
+
+      tr.surah {
+        cursor: pointer;
+      }
+
+      input.surah_search {
+        display: inline;
+        width: 280px;
+        height: 30px;
+      }
+
+      div.main_controller {
+        height: 50%;
+        padding: 0 120px;
+      }
+
+      div.seeker {
+        height: 30%;
+        width: 100%;
+      }
+
+      .prev, .play, .pause, .next {
+        font-size: 1.3em;
+        margin: 10px;
+        cursor: pointer;
+      }
+
+
+      .seeker input {
+        width: 90%;
+        margin: 0 17px;
+      }
+
+      div.info {
+        height: 20%;
+        text-align: center;
+      }
+
+      .bold {
+        font-weight: bold !important;
+      }
+
+
+    </style>
+  </head>
+  <body data-ng-controller="MainController">
+    <div class="control">
+      <div class="player">
+        <div class="info"><span data-ng-show="isInit">{{playingSurah.name}} | {{currReciter.name}}</span></div>
+        <div class="main_controller">
+          <div class="prev pull-left" data-ng-click="prev()"><span class="glyphicon glyphicon-fast-backward"></span></div>
+          <div class="play pull-left" data-ng-click="play()" data-ng-show="!isPlaying"><span class="glyphicon glyphicon-play"></span></div>
+          <div class="pause pull-left" data-ng-click="pause()" data-ng-show="isPlaying"><span class="glyphicon glyphicon-pause"></span></div>
+          <div class="next pull-left" data-ng-click="next()"><span class="glyphicon glyphicon-fast-forward"></span></div>
+        </div>
+        <div class="seeker">
+          <input type="range" data-player-seeker="" value="0" data-ng-change="seek()" data-ng-model="seekTime"></input>
+        </div>
+      </div>
+      <div class="nav">
+        <div class="btn-group">
+          <a type="button" class="btn btn-default dropdown-toggle btn-sm" data-toggle="dropdown">
+            Reciter<span class="caret"></span>
+          </a>
+        <ul class="dropdown-menu" role="menu">
+          <li data-ng-repeat="reciter in reciters">
+            <a href="" data-ng-class="{bold:reciter.iscurr}" data-ng-click="setReciter(reciter)">{{reciter.name}}</a>
+          </li>
+        </ul>
+       </div>
+       <input type="text" class="form-control surah_search" placeholder="Search" data-ng-model="filterText">
+      </div>
+    </div>
+    <div class="content">
+      <table class="surahs table table-hover">
+        <tr class="surah" data-ng-repeat="surah in surahs | filter:filterText" data-ng-click="initPlay(surah.number)">
+          <td>{{surah.number}}</td>
+          <td>{{surah.name}}</td>
+          <td><em>{{surah.translation}}</em></td>
+        </tr>
+      </table>
+    </div>
+  </body>
+  <script src="/bower_components/angular/angular.js"></script>
+  <script src="/bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js"></script>
+  <script src="/app/app.js"></script>
+  <script src="/app/controller.js"></script>
+  <script src="/app/factory.js"></script>
+  <script src="/app/directive.js"></script>
+</html>
