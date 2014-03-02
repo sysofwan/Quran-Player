@@ -1,3 +1,5 @@
 bower_components
 prod
 .DS_Store
+prod.zip
+node_modules

@@ -18,10 +18,8 @@ var player = (function() {
 
 	var setSource = function(surahNum, reciter) {
 		stop();
-		console.log('called set source');
 		currReciter = reciter;
 		currSurahNum = surahNum;
-		console.log(surahNum);
 		var url = generateUrl(surahNum, reciter.path);
 		audioElt.src = url;
 		isSet = true;
@@ -46,24 +44,22 @@ var player = (function() {
 	};
 
 	var next = function() {
-		if (currSurahNum < 115) {
+		if (isSet && currSurahNum < 115) {
 			setSource(currSurahNum + 1, currReciter);
 		}
 	};
 
 	var prev = function() {
-		if (currSurahNum > 1) {
+		if (isSet && currSurahNum > 1) {
 			setSource(currSurahNum - 1, currReciter);
 		}
 	};
 
 	var setReciter = function(reciter) {
 		var paused = audioElt.paused;
-		console.log(isSet);
 		if (isSet) {
 			setSource(currSurahNum, reciter);
 			if (paused) {
-				console.log('paused');
 				pause();
 			}
 		}

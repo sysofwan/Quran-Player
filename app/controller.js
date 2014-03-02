@@ -49,8 +49,10 @@ app.controller('MainController', function($scope, surahFactory, playerFactory) {
 		if (playReinit) {
 			$scope.initPlay(playerFactory.getSurahNum());
 		}
-		playerFactory.play();
-		$scope.isPlaying = true;
+		if ($scope.isInit) {
+			playerFactory.play();
+			$scope.isPlaying = true;
+		}
 	};
 	$scope.pause = function() {
 		playerFactory.pause();
@@ -59,18 +61,18 @@ app.controller('MainController', function($scope, surahFactory, playerFactory) {
 
 	$scope.setReciter = function(reciter) {
 		if (reciter.iscurr) return;
-		console.log($scope.currReciter);
 		$scope.currReciter.iscurr = false;
-		console.log($scope.currReciter);
 		reciter.iscurr = true;
 		$scope.currReciter = reciter;
 		playerFactory.setReciter(reciter);
 	};
 
 	$scope.seek = function() {
-		var duration = playerFactory.getDuration();
-		var time = ($scope.seekTime/100) * duration;
-		playerFactory.scrub(time);
+		if ($scope.isInit) {
+			var duration = playerFactory.getDuration();
+			var time = ($scope.seekTime/100) * duration;
+			playerFactory.scrub(time);
+		}
 	};
 
 	$scope.next = function() {

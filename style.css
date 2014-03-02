@@ -1,0 +1,66 @@
+html {
+  width: 357px;
+  height: 500px;
+}
+body {
+  padding-top: 115px;
+}
+div.control {
+  height: 115px;
+  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background: white;
+  box-shadow: 0 2px 3px #ccc;
+}
+
+div.player {
+  height: 80px;
+}
+
+.control div.nav {
+  height: 35px;
+  padding: 3px;
+}
+
+tr.surah {
+  cursor: pointer;
+}
+
+input.surah_search {
+  display: inline;
+  width: 275px;
+  height: 30px;
+}
+
+div.main_controller {
+  height: 50%;
+  padding: 0 120px;
+}
+
+div.seeker {
+  height: 30%;
+  width: 100%;
+}
+
+.prev, .play, .pause, .next {
+  font-size: 1.3em;
+  margin: 10px;
+  cursor: pointer;
+}
+
+
+.seeker input {
+  width: 90%;
+  margin: 0 17px;
+}
+
+div.info {
+  height: 20%;
+  text-align: center;
+}
+
+.bold {
+  font-weight: bold !important;
+}
