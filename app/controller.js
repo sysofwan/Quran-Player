@@ -38,7 +38,9 @@ app.controller('MainController', function($scope, surahFactory, playerFactory, $
 
 	var reloadReciter = function() {
 		var currReciter = playerFactory.getReciter();
-		changeReciter(currReciter);
+		if (currReciter) {
+			changeReciter(currReciter);
+		}
 	};
 
 	var changeReciter = function(reciter) {

@@ -10,13 +10,14 @@ module.exports = function(grunt) {
 						cwd:'bower_components/',
 						src:['angular/angular.min.js', 
 							'angular-bootstrap/ui-bootstrap-tpls.min.js',
-							'bootstrap/dist/css/bootstrap.min.css'],
+							'bootstrap/dist/css/bootstrap.min.css',
+							'store.js/store.min.js'],
 						dest:'prod/libs/'
 					},
 					{
 						expand:true,
 						flatten: true,
-						src:['manifest.json', 'icon.png'],
+						src:['icon.png', 'spinner.gif'],
 						dest:'prod'
 					},
 					{
@@ -45,6 +46,19 @@ module.exports = function(grunt) {
 						'prod/app.min.js':'app/*.js',
 						'prod/background.js':'background.js',
 					}
+			}
+		},
+		'string-replace': {
+			release: {
+				options: {
+					replacements :[{
+						pattern: "bower_components/store.js/store.min.js",
+						replacement: "/libs/store.min.js"
+					}]
+				},
+				files: {
+					'prod/manifest.json' : 'manifest.json'
+				}
 			}
 		},
 		cssmin: {
@@ -76,5 +90,6 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-processhtml');
 	grunt.loadNpmTasks('grunt-contrib-compress');
 	grunt.loadNpmTasks('grunt-contrib-cssmin');
-	grunt.registerTask('release', ['clean:release', 'copy:release', 'uglify:release', 'cssmin:release', 'processhtml:release', 'compress:release']);
+	grunt.loadNpmTasks('grunt-string-replace');
+	grunt.registerTask('release', ['clean:release', 'copy:release', 'string-replace:release','uglify:release', 'cssmin:release', 'processhtml:release', 'compress:release']);
 };

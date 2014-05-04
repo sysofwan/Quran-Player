@@ -2,7 +2,7 @@ var player = (function() {
 	var RECITER_KEY = 'prev.reciter.id';
 	var rootUrl = 'http://download.quranicaudio.com/quran/';
 	var isSet = false;
-	var currReciter = store.get(RECITER_KEY) || 0;
+	var currReciter = store.get(RECITER_KEY);
 	console.log(store.get(RECITER_KEY)); 
 	var currSurahNum;
 	var onChange = [];
