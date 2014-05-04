@@ -1,10 +1,28 @@
 var player = (function() {
+	var RECITER_KEY = 'prev.reciter.id';
 	var rootUrl = 'http://download.quranicaudio.com/quran/';
 	var isSet = false;
-	var currReciter;
+	var currReciter = store.get(RECITER_KEY) || 0;
+	console.log(store.get(RECITER_KEY)); 
 	var currSurahNum;
-	var audioElt = document.createElement('audio');
+	var onChange = [];
+	var onLoadstart = [];
+
+	var audioElt = new Audio();
 	audioElt.setAttribute('autoplay', 'autoplay');
+
+	chrome.runtime.onConnect.addListener(function(port) {
+		port.onDisconnect.addListener(function() {
+			onChange = [];
+			onLoadstart = [];
+		});
+	});
+
+	var callCallbacks = function(callbacks) {
+		for (var i = 0; i < callbacks.length; ++i) {
+			callbacks[i]();
+		}
+	};
 
 	var padZeroes = function(num) {
 		var s = "00" + num;
@@ -16,30 +34,39 @@ var player = (function() {
 		return rootUrl + reciterId + '/' + surahCode + '.mp3';
 	};
 
+	var sourceCallback = function() {
+		isSet = true;
+		callCallbacks(onChange);
+		audioElt.removeEventListener('playing', sourceCallback);
+	};
+
 	var setSource = function(surahNum, reciter) {
 		stop();
 		currReciter = reciter;
 		currSurahNum = surahNum;
 		var url = generateUrl(surahNum, reciter.path);
 		audioElt.src = url;
-		isSet = true;
+		callCallbacks(onLoadstart);
+		audioElt.addEventListener('playing', sourceCallback);
 	};
 
 	var play = function() {
 		if (isSet) {
 			audioElt.play();
+			callCallbacks(onChange);
 		}
 	};
 
 	var pause = function() {
 		if (isSet) {
 			audioElt.pause();
+			callCallbacks(onChange);
 		}
 	};
 
 	var stop = function() {
 		isSet = false;
-		pause();
+		audioElt.pause();
 		audioElt.src = '';
 	};
 
@@ -57,6 +84,8 @@ var player = (function() {
 
 	var setReciter = function(reciter) {
 		var paused = audioElt.paused;
+		store.set(RECITER_KEY, reciter);
+		console.log(store.get(RECITER_KEY));
 		if (isSet) {
 			setSource(currSurahNum, reciter);
 			if (paused) {
@@ -70,15 +99,14 @@ var player = (function() {
 	});
 
 	return {
-		stop: stop,
 		play: play,
 		pause: pause,
 		setSource: setSource,
 		getDuration: function() {
-			return audioElt.duration;
+			return Math.round(audioElt.duration);
 		},
 		getCurrentTime: function() {
-			return audioElt.currentTime;
+			return Math.round(audioElt.currentTime);
 		},
 		getSurahNum: function() {
 			return currSurahNum;
@@ -98,8 +126,23 @@ var player = (function() {
 		scrub: function(time) {
 			audioElt.currentTime = time;
 		},
+		onChange: function(callback) {
+			onChange.push(callback);
+		},
+		onLoadstart: function(callback) {
+			onLoadstart.push(callback);
+		},
+		getBuffered: function() {
+			return audioElt.buffered;
+		},
+		getPlayedPercentage: function() {
+			if (isSet) {
+				return Math.round((audioElt.currentTime/audioElt.duration) * 100);
+			}
+			return 0;
+		},
 		setReciter: setReciter,
 		next: next,
 		prev: prev
 	};
-})();
+}());

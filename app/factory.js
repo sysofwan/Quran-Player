@@ -1,13 +1,15 @@
 app.factory('playerFactory', function() {
+	var port = chrome.runtime.connect();
 	return chrome.extension.getBackgroundPage().player;
 });
 
 app.factory('surahFactory', function() {
 
-	var createReciter = function(name, path) {
+	var createReciter = function(id, name, path) {
 		var reciter = {};
 		reciter.name = name;
 		reciter.path = path;
+		reciter.id = id;
 		reciter.iscurr = false;
 		return reciter;
 	};
@@ -135,17 +137,17 @@ app.factory('surahFactory', function() {
 				createSurah("Al-Falaq", "The Dawn", 114), 
 				createSurah("An-Nas", "The Men", 115)];
 
-	var reciters = [createReciter("Mishari Rashid al-`Afasy", "mishaari_raashid_al_3afaasee"),
-					createReciter("Muhammad Siddiq al-Minshawi", "muhammad_siddeeq_al-minshaawee"),
-					createReciter("Ahmed ibn Ali al-Ajmy", "ahmed_ibn_3ali_al-3ajamy"),
-					createReciter("Makkah 1424", "makkah_1424"),
-					createReciter("Mustafa al-`Azawi", "mustafa_al3azzawi"),
-					createReciter("Yasser ad-Dussary", "yasser_ad-dussary"),
-					createReciter("Saad al-Ghamdi", "sa3d_al-ghaamidi/complete"),
-					createReciter("Abdur-Rahman as-Sudais", "abdurrahmaan_as-sudays"),
-					createReciter("Mahmoud Khalil al-Husary", "mahmood_khaleel_al-husaree"),
-					createReciter("Sahl Yaaseen", "sahl_yaaseen"),
-					createReciter("Abdullaah Basfar", "abdullaah_basfar")];
+	var reciters = [createReciter(0, "Mishari Rashid al-`Afasy", "mishaari_raashid_al_3afaasee"),
+					createReciter(1, "Muhammad Siddiq al-Minshawi", "muhammad_siddeeq_al-minshaawee"),
+					createReciter(2, "Ahmed ibn Ali al-Ajmy", "ahmed_ibn_3ali_al-3ajamy"),
+					createReciter(3, "Makkah 1424", "makkah_1424"),
+					createReciter(4, "Mustafa al-`Azawi", "mustafa_al3azzawi"),
+					createReciter(5, "Yasser ad-Dussary", "yasser_ad-dussary"),
+					createReciter(6, "Saad al-Ghamdi", "sa3d_al-ghaamidi/complete"),
+					createReciter(7, "Abdur-Rahman as-Sudais", "abdurrahmaan_as-sudays"),
+					createReciter(8, "Mahmoud Khalil al-Husary", "mahmood_khaleel_al-husaree"),
+					createReciter(9, "Sahl Yaaseen", "sahl_yaaseen"),
+					createReciter(10, "Abdullaah Basfar", "abdullaah_basfar")];
 
 	var factory = {};
 

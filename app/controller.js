@@ -1,70 +1,79 @@
-app.controller('MainController', function($scope, surahFactory, playerFactory) {
-	var playReinit = false;
+app.controller('MainController', function($scope, surahFactory, playerFactory, $interval) {
 
 	var init = function() {
+		$scope.time = {};
+		$scope.playingSurah = {};
 		$scope.surahs = surahFactory.getSurahs();
 		$scope.reciters = surahFactory.getReciters();
-		$scope.isPlaying = playerFactory.isPlaying();
-		$scope.playingSurah = {};
-		$scope.isInit = playerFactory.isInit();
+		$scope.seekTime = playerFactory.getPlayedPercentage();
 		$scope.currReciter = $scope.reciters[0];
+		$scope.loadingSurah = false;
 		$scope.reciters[0].iscurr = true;
-		if ($scope.isInit) {
-			initReciter();
-			relaodSurah();
-		}
+		$scope.time.currentTime = 0;
+		$scope.time.duration = 0;
+
+		reloadCondition();
+		reloadReciter();
+		relaodSurah();
 	};
 
-	var initReciter = function() {
+	playerFactory.onChange(function() {
+		reloadCondition();
+		relaodSurah();
+	});
+
+	playerFactory.onLoadstart(function() {
+		$scope.loadingSurah = true;
+	});
+
+	$interval(function() {
+		if (playerFactory.isInit()) {
+			$scope.time.currentTime = playerFactory.getCurrentTime();
+		}
+		else {
+			$scope.time.currentTime = 0;
+		}
+	}, 1000);
+
+
+	var reloadReciter = function() {
 		var currReciter = playerFactory.getReciter();
-		for (var i = 0; i < $scope.reciters.length; i++) {
-			if ($scope.reciters[i].name === currReciter.name) {
-				$scope.reciters[i].iscurr = true;
-				$scope.currReciter = $scope.reciters[i];
-			} else {
-				$scope.reciters[i].iscurr = false;
-			}
+		changeReciter(currReciter);
+	};
+
+	var changeReciter = function(reciter) {
+		if (reciter.id != $scope.currReciter.id) {
+			$scope.currReciter.iscurr = false;
+			$scope.currReciter = $scope.reciters[reciter.id];
+			$scope.currReciter.iscurr = true;
 		}
 	};
 
 	var relaodSurah = function() {
 		if (playerFactory.isInit()) {
 			$scope.playingSurah = $scope.surahs[playerFactory.getSurahNum() - 1];
+			$scope.time.currentTime = playerFactory.getCurrentTime();
+			$scope.time.duration = playerFactory.getDuration();
 		}
-		else $scope.playingSurah = '';
+		else $scope.playingSurah = {};
 	};
 
-	$scope.isCurrReciter = function(reciter) {
-		return reciter.name === $scope.currReciter.name;
+	var reloadCondition = function() {
+		$scope.isInit = playerFactory.isInit();
+		$scope.isPlaying = playerFactory.isPlaying();
+		$scope.loadingSurah = false;
 	};
 
 	$scope.initPlay = function(surahNum) {
 		playerFactory.setSource(surahNum, $scope.currReciter);
-		relaodSurah();
-		$scope.isPlaying = true;
-		$scope.isInit = true;
-		playReinit = false;
-	};
-	$scope.play = function() {
-		if (playReinit) {
-			$scope.initPlay(playerFactory.getSurahNum());
-		}
-		if ($scope.isInit) {
-			playerFactory.play();
-			$scope.isPlaying = true;
-		}
-	};
-	$scope.pause = function() {
-		playerFactory.pause();
-		$scope.isPlaying = false;
 	};
 
 	$scope.setReciter = function(reciter) {
 		if (reciter.iscurr) return;
-		$scope.currReciter.iscurr = false;
-		reciter.iscurr = true;
-		$scope.currReciter = reciter;
-		playerFactory.setReciter(reciter);
+		else {
+			playerFactory.setReciter(reciter);
+			changeReciter(reciter);
+		}
 	};
 
 	$scope.seek = function() {
@@ -75,14 +84,10 @@ app.controller('MainController', function($scope, surahFactory, playerFactory) {
 		}
 	};
 
-	$scope.next = function() {
-		playerFactory.next();
-		relaodSurah();
-	};
-	$scope.prev = function() {
-		playerFactory.prev();
-		relaodSurah();
-	};
+	$scope.play = playerFactory.play;
+	$scope.pause = playerFactory.pause;
+	$scope.next = playerFactory.next;
+	$scope.prev = playerFactory.prev;
 
 	init();
 });

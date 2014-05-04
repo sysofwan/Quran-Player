@@ -14,41 +14,61 @@
     </style>
   </head>
   <body data-ng-controller="MainController">
-    <div class="control">
-      <div class="player">
-        <div class="info"><span data-ng-show="isInit">{{playingSurah.name}} | {{currReciter.name}}</span></div>
-        <div class="main_controller">
-          <div class="prev pull-left" data-ng-click="prev()"><span class="glyphicon glyphicon-fast-backward"></span></div>
-          <div class="play pull-left" data-ng-click="play()" data-ng-show="!isPlaying"><span class="glyphicon glyphicon-play"></span></div>
-          <div class="pause pull-left" data-ng-click="pause()" data-ng-show="isPlaying"><span class="glyphicon glyphicon-pause"></span></div>
-          <div class="next pull-left" data-ng-click="next()"><span class="glyphicon glyphicon-fast-forward"></span></div>
+    <div class="main-content">
+      <div class="control">
+        <div class="player">
+          <div class="main-controller pull-left" data-ng-class="{inactive: !isInit}">
+            <div class="prev pull-left" data-ng-click="prev()"><span class="glyphicon glyphicon-fast-backward"></span></div>
+            <div class="play pull-left" data-ng-click="play()" data-ng-show="!isPlaying"><span class="glyphicon glyphicon-play"></span></div>
+            <div class="pause pull-left" data-ng-click="pause()" data-ng-show="isPlaying"><span class="glyphicon glyphicon-pause"></span></div>
+            <div class="next pull-left" data-ng-click="next()"><span class="glyphicon glyphicon-fast-forward"></span></div>
+          </div>
+          <div class="right-controller pull-right">
+            <div class="info">
+              <div class="surah-name">
+                <span data-ng-show="isInit && !loadingSurah">{{playingSurah.name}}</span>
+                <span data-ng-show="!isInit && !loadingSurah">Select a surah...</span>
+                <img src="/spinner.gif" data-ng-show="loadingSurah">
+              </div>
+              <div class="reciter-name">
+                <span>{{currReciter.name}}</span> 
+              </div>
+            </div>
+            <div class="seeker">
+              <div class="pull-left time">{{ time.currentTime | splitSeconds}}</div>
+              <div class="range pull-left">
+                <input type="range" data-player-seeker="" data-ng-change="seek()" data-ng-model="seekTime"></input>
+                <div class="background"></div>
+                <div class="loaded" data-buffered-time=""></div>
+              </div>
+              <div class="pull-left time">{{ time.duration | splitSeconds}}</div>
+            </div>
+          </div>
         </div>
-        <div class="seeker">
-          <input type="range" data-player-seeker="" value="0" data-ng-change="seek()" data-ng-model="seekTime"></input>
+        <div class="nav">
+          <div class="btn-group">
+            <a type="button" class="btn btn-default dropdown-toggle btn-sm" data-toggle="dropdown">
+              Reciter<span class="caret"></span>
+            </a>
+          <ul class="dropdown-menu" role="menu">
+            <li data-ng-repeat="reciter in reciters">
+              <a href="" data-ng-class="{bold:reciter.iscurr}" data-ng-click="setReciter(reciter)">{{reciter.name}}</a>
+            </li>
+          </ul>
+         </div>
+         <input type="text" class="form-control surah_search" placeholder="Search" data-ng-model="filterText" autofocus="autofocus">
         </div>
       </div>
-      <div class="nav">
-        <div class="btn-group">
-          <a type="button" class="btn btn-default dropdown-toggle btn-sm" data-toggle="dropdown">
-            Reciter<span class="caret"></span>
-          </a>
-        <ul class="dropdown-menu" role="menu">
-          <li data-ng-repeat="reciter in reciters">
-            <a href="" data-ng-class="{bold:reciter.iscurr}" data-ng-click="setReciter(reciter)">{{reciter.name}}</a>
-          </li>
-        </ul>
-       </div>
-       <input type="text" class="form-control surah_search" placeholder="Search" data-ng-model="filterText">
+      <div class="content">
+        <table class="surahs table table-hover">
+          <tr class="surah" data-ng-repeat="surah in surahs | filter:filterText" data-ng-click="initPlay(surah.number)" data-ng-class="{playing: surah == playingSurah}">
+            <td class="playing-symbol"><span class="glyphicon glyphicon-play"></span></td>
+            <td class="surah-number">{{surah.number}}</td>
+            <td>{{surah.name}}</td>
+            <td><em>{{surah.translation}}</em></td>
+          </tr>
+        </table>
       </div>
-    </div>
-    <div class="content">
-      <table class="surahs table table-hover">
-        <tr class="surah" data-ng-repeat="surah in surahs | filter:filterText" data-ng-click="initPlay(surah.number)">
-          <td>{{surah.number}}</td>
-          <td>{{surah.name}}</td>
-          <td><em>{{surah.translation}}</em></td>
-        </tr>
-      </table>
     </div>
   </body>
 
@@ -58,6 +78,7 @@
   <!-- /build -->
   <!-- build:js:release app.min.js -->
   <script src="/app/app.js"></script>
+  <script src="/app/filter.js"></script>
   <script src="/app/controller.js"></script>
   <script src="/app/factory.js"></script>
   <script src="/app/directive.js"></script>
